@@ -54,3 +54,22 @@ services:
       - '9999:9999'
   hadoop:
     image: cybermaggedon/hadoop
+
+  zookeeper:
+    image: bitnami/zookeeper
+    volumes:
+      - kafka_zookeeper:/opt/zookeeper-3.4.13/data
+    environment:  
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    
+  
+  kafka:
+    image: bitnami/kafka
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - "zookeeper"
+
+volumes:
+  kafka_zookeeper: {}
