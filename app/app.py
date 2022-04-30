@@ -1,5 +1,6 @@
 from pyspark import SparkContext, SparkConf
 from pyspark.streaming import StreamingContext
+from pyspark.streaming.kafka import KafkaUtils
 
 
 conf = (
@@ -16,6 +17,8 @@ conf = (
 
 sc = SparkContext(conf=conf)
 
+sc.setLogLevel("WARN")
+
 ssc = StreamingContext(sc, 1)
 
 ssc.checkpoint("hdfs://hadoop:9000/checkpoint")
@@ -27,7 +30,9 @@ def updateFunc(new_values, last_sum):
     return sum(new_values) + (last_sum or 0)
 
 
-lines = ssc.socketTextStream("data_app", 9999)
+lines = KafkaUtils.createStream(
+    ssc, "kafka:9092", "spark-streaming-consumer", {"data-topic": 1}
+)
 
 words = lines.flatMap(lambda line: line.split(" ")).filter(lambda word: word != "")
 
