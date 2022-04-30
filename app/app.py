@@ -31,9 +31,10 @@ def updateFunc(new_values, last_sum):
 
 
 lines = KafkaUtils.createStream(
-    ssc, "kafka:9092", "spark-streaming-consumer", {"data-topic": 1}
+    ssc, "zookeeper:2181", "spark-streaming-consumer", {"data-topic": 1}
 )
 
+# FIXME interface changes
 words = lines.flatMap(lambda line: line.split(" ")).filter(lambda word: word != "")
 
 pairs = words.map(lambda word: (word.lower(), 1))
