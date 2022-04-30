@@ -1,5 +1,5 @@
 FROM openjdk:8-slim
-COPY --from=python:3.8 . .
+COPY --from=python:3.6 . .
 
 WORKDIR /app
 
