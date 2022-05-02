@@ -1,39 +1,19 @@
 from essential_generators import DocumentGenerator
-import socket
+from kafka import KafkaProducer
+from kafka.errors import KafkaError
 import time
-import sys
-from threading import Thread
-
-
-def on_client(client_socket, addr):
-    gen = DocumentGenerator()
-    try:
-        while True:
-            data = gen.sentence() + "\n"
-            client_socket.send(data.encode())
-            time.sleep(0.5)
-    except:
-        conn.close()
 
 
 if __name__ == "__main__":
-
-    s = socket.socket()
-    s.bind(("", 9999))
-    s.listen(5)
-
-    print("Server is running..." + str(time.time()))
+    producer = KafkaProducer(bootstrap_servers=["kafka:9092"])
+    gen = DocumentGenerator()
 
     while True:
         try:
-            conn, addr = s.accept()
-            print("Got connection from", addr)
-            t = Thread(target=on_client, args=(conn, addr))
-            t.start()
-
-        except KeyboardInterrupt:
-            s.close()
-
-        except:  # catch *all* exceptions
-            e = sys.exc_info()[0]
-            print("Error: %s" % e)
+            message = gen.sentence()
+            producer.send("data-topic", message.encode("utf-8"))
+            print("Sent: ", message)
+            time.sleep(0.5)
+        except KafkaError as e:
+            print(e)
+            break

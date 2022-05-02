@@ -1,6 +1,7 @@
 from pyspark import SparkContext, SparkConf
 from pyspark.streaming import StreamingContext
-
+from pyspark.streaming.kafka import KafkaUtils
+import string
 
 conf = (
     SparkConf()
@@ -16,6 +17,8 @@ conf = (
 
 sc = SparkContext(conf=conf)
 
+sc.setLogLevel("WARN")
+
 ssc = StreamingContext(sc, 1)
 
 ssc.checkpoint("hdfs://hadoop:9000/checkpoint")
@@ -27,9 +30,13 @@ def updateFunc(new_values, last_sum):
     return sum(new_values) + (last_sum or 0)
 
 
-lines = ssc.socketTextStream("data_app", 9999)
+tuples = KafkaUtils.createStream(
+    ssc, "zookeeper:2181", "spark-streaming-consumer", {"data-topic": 1}
+)
 
-words = lines.flatMap(lambda line: line.split(" ")).filter(lambda word: word != "")
+words = tuples.flatMap(
+    lambda line: line[1].translate(str.maketrans("", "", string.punctuation)).split(" ")
+).filter(lambda word: word != "")
 
 pairs = words.map(lambda word: (word.lower(), 1))
 wordCounts = pairs.reduceByKey(lambda x, y: x + y)
