@@ -12,7 +12,6 @@ if __name__ == "__main__":
         try:
             message = gen.sentence()
             producer.send("data-topic", message.encode("utf-8"))
-            print("Sent: ", message)
             time.sleep(0.5)
         except KafkaError as e:
             print(e)

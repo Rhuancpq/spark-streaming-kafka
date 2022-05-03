@@ -60,11 +60,11 @@ sorted = running.transform(lambda rdd: rdd.sortBy(lambda x: x[1], ascending=Fals
 wordsLen = running.reduce(lambda x, y: ("Total number of words", x[1] + y[1]))
 
 
-##sorted.pprint()
-##wordsLen.pprint()
-##wordsByWindowWithS.pprint()
-##wordsByWindowWithP.pprint()
-##wordsByWindowWithR.pprint()
+sorted.pprint()
+wordsLen.pprint()
+wordsByWindowWithS.pprint()
+wordsByWindowWithP.pprint()
+wordsByWindowWithR.pprint()
 wordsByWindowWithSize6.pprint() 
 wordsByWindowWithSize8.pprint() 
 wordsByWindowWithSize11.pprint() 

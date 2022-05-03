@@ -47,7 +47,6 @@ services:
       - spark
       - spark-worker-2
       - spark-worker-1
-      - hadoop
       - zookeeper
       - kafka
   data_app:
